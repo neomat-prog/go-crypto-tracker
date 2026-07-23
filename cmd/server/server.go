@@ -4,6 +4,8 @@ import (
 	"log"
 	"net/http"
 	"time"
+
+	"github.com/go-chi/chi/v5"
 )
 
 type ServerOpts struct {
@@ -28,13 +30,13 @@ func Hello(w http.ResponseWriter, req *http.Request) {
 }
 
 func (s *Server) Start() error {
-	mux := http.NewServeMux()
+	router := chi.NewRouter()
 
-	mux.HandleFunc("/", Hello)
+	s.registerRoutes(router)
 
 	server := &http.Server{
 		Addr:         s.opts.ListenAddr,
-		Handler:      mux,
+		Handler:      router,
 		ReadTimeout:  s.opts.ReadTimeout,
 		WriteTimeout: s.opts.WriteTimeout,
 	}
