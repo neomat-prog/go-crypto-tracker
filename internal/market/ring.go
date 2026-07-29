@@ -2,8 +2,8 @@ package market
 
 type Ring struct {
 	buf  []Kline
-	head int
-	n    int
+	head int // head := idx of oldest candle
+	n    int // count of valid candles currently stored
 }
 
 func NewRing(size int) *Ring {
@@ -14,8 +14,21 @@ func NewRing(size int) *Ring {
 	}
 }
 
-// push add k, oldest out when full
 func (r *Ring) Push(k Kline) {
+
+	if len(r.buf) == 0 {
+		return
+	}
+
+	if r.n > 0 {
+		last := (r.head + r.n - 1) % len(r.buf)
+
+		if r.buf[last].OpenTime.Equal(k.OpenTime) {
+			r.buf[last] = k
+			return
+		}
+	}
+
 	if r.n < len(r.buf) {
 		idx := (r.head + r.n) % len(r.buf)
 		r.buf[idx] = k
@@ -25,4 +38,15 @@ func (r *Ring) Push(k Kline) {
 
 	r.buf[r.head] = k
 	r.head = (r.head + 1) % len(r.buf)
+}
+
+func (r *Ring) Closes() []float64 {
+	closes := make([]float64, r.n)
+
+	for i := 0; i < r.n; i++ {
+		idx := (r.head + i) % len(r.buf)
+		closes[i] = r.buf[idx].Close
+	}
+
+	return closes
 }
