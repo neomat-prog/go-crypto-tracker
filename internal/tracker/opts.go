@@ -1,36 +1,41 @@
 package tracker
 
 import (
-	"log"
-	"time"
-)
+	"sync"
 
-type TrackerOpts struct {
-	Symbols     []string
-	Interval    string
-	RenderRate  time.Duration
-	HistorySize int
-	Logger      *log.Logger
-}
+	"github.com/neomat-prog/internal/market"
+)
 
 type Tracker struct {
 	TrackerOpts
 
-	transport Transport
-	store     map[string]*Ring
+	transport market.Transport
+	store     map[string]*market.Ring
 
-	klinech  chan Kline
+	klinech  chan market.Kline
 	addSymch chan string
+	stopOnce sync.Once
+	snapch   chan snapReq
 	quitch   chan struct{}
 }
 
-func NewTracker(opts TrackerOpts, tr Transport) *Tracker {
+type snapReq struct {
+	symbol string
+	respch chan []float64
+}
+
+func NewTracker(opts TrackerOpts, tr market.Transport) *Tracker {
 	return &Tracker{
 		TrackerOpts: opts,
 		transport:   tr,
-		store:       make(map[string]*Ring),
-		klinech:     make(chan Kline, 1024),
+		store:       make(map[string]*market.Ring),
+		klinech:     make(chan market.Kline, 1024),
 		addSymch:    make(chan string),
+		snapch:      make(chan snapReq),
 		quitch:      make(chan struct{}),
 	}
+}
+
+func (t *Tracker) Stop() {
+	t.stopOnce.Do(func() { close(t.quitch) })
 }
