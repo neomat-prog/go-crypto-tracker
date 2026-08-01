@@ -42,6 +42,16 @@ func (t *Tracker) loop() {
 	}
 }
 
+func (t *Tracker) Closes(symbol string) []float64 {
+	t.mu.RLock()
+	defer t.mu.RUnlock()
+
+	values := t.Closes(symbol)
+	result := make([]float64, len(values))
+	copy(result, values)
+	return result
+}
+
 func (t *Tracker) Snapshot(symbol string) []float64 {
 	req := snapReq{symbol: symbol, respch: make(chan []float64, 1)}
 	select {

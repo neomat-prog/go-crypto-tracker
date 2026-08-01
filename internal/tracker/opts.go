@@ -9,6 +9,8 @@ import (
 type Tracker struct {
 	TrackerOpts
 
+	mu sync.RWMutex
+
 	transport market.Transport
 	store     map[string]*market.Ring
 
