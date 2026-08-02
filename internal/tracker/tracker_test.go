@@ -5,7 +5,6 @@ import (
 	"time"
 )
 
-// Snapshot before Start must park, then unblock with nil once Stop closes quitch.
 func TestSnapshotPreStart(t *testing.T) {
 	tr := NewTracker(TrackerOpts{RingSize: 10}, nil)
 

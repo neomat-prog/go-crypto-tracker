@@ -2,10 +2,12 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"os"
 	"os/signal"
 	"time"
 
+	"github.com/neomat-prog/internal"
 	"github.com/neomat-prog/internal/market"
 	"github.com/neomat-prog/internal/tracker"
 )
@@ -15,6 +17,7 @@ func main() {
 	defer cancel()
 
 	tp := market.NewMockTransport("BTCUSDT", 100*time.Millisecond, 0)
+
 	t := tracker.NewTracker(tracker.TrackerOpts{
 		Symbols:  []string{"BTCUSDT"},
 		RingSize: 100,
@@ -23,9 +26,31 @@ func main() {
 
 	go func() {
 		<-ctx.Done()
-		tp.Close()
+		_ = tp.Close()
 		t.Stop()
 	}()
 
-	t.Start()
+	go t.Start()
+
+	ticker := time.NewTicker(500 * time.Millisecond)
+	defer ticker.Stop()
+
+	for {
+		select {
+		case <-ctx.Done():
+			return
+
+		case <-ticker.C:
+			closes := t.Snapshot("BTCUSDT")
+
+			fmt.Print("\033[2J\033[H")
+
+			fmt.Print(internal.Render(
+				"BTCUSDT",
+				closes,
+				15,
+				80,
+			))
+		}
+	}
 }
