@@ -1,7 +1,6 @@
 package tracker
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/neomat-prog/internal/market"
@@ -15,7 +14,6 @@ type TrackerOpts struct {
 
 func (t *Tracker) Start() error {
 	go t.transport.Start(t.klinech)
-	go t.renderLoop()
 	close(t.readych)
 	t.loop()
 	return nil
@@ -60,21 +58,5 @@ func (t *Tracker) Snapshot(symbol string) []float64 {
 		return nil
 	case closes := <-req.respch:
 		return closes
-	}
-}
-
-func (t *Tracker) renderLoop() {
-	tk := time.NewTicker(t.Interval)
-	defer tk.Stop()
-	for {
-		select {
-		case <-t.quitch:
-			return
-		case <-tk.C:
-			fmt.Print("\033[H\033[2J")
-			for _, s := range t.Symbols {
-				fmt.Println(s, t.Snapshot(s))
-			}
-		}
 	}
 }

@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"github.com/neomat-prog/internal"
-	"github.com/neomat-prog/internal/market"
+	"github.com/neomat-prog/internal/binance"
 	"github.com/neomat-prog/internal/tracker"
 )
 
@@ -16,10 +16,14 @@ func main() {
 	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt)
 	defer cancel()
 
-	tp := market.NewMockTransport("BTCUSDT", 100*time.Millisecond, 0)
+	tp := binance.NewWS(binance.WSOpts{
+		Symbols:  []string{"ETHUSDT"},
+		Interval: "1s",
+		Backfill: 100,
+	})
 
 	t := tracker.NewTracker(tracker.TrackerOpts{
-		Symbols:  []string{"BTCUSDT"},
+		Symbols:  []string{"ETHUSDT"},
 		RingSize: 100,
 		Interval: 500 * time.Millisecond,
 	}, tp)
@@ -41,12 +45,12 @@ func main() {
 			return
 
 		case <-ticker.C:
-			closes := t.Snapshot("BTCUSDT")
+			closes := t.Snapshot("ETHUSDT")
 
 			fmt.Print("\033[2J\033[H")
 
 			fmt.Print(internal.Render(
-				"BTCUSDT",
+				"ETHUSDT",
 				closes,
 				15,
 				80,
