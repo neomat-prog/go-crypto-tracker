@@ -15,6 +15,7 @@ type Tracker struct {
 	klinech  chan market.Kline
 	addSymch chan string
 	stopOnce sync.Once
+	readych  chan struct{}
 	snapch   chan snapReq
 	quitch   chan struct{}
 }
@@ -31,6 +32,7 @@ func NewTracker(opts TrackerOpts, tr market.Transport) *Tracker {
 		store:       make(map[string]*market.Ring),
 		klinech:     make(chan market.Kline, 1024),
 		addSymch:    make(chan string),
+		readych:     make(chan struct{}),
 		snapch:      make(chan snapReq),
 		quitch:      make(chan struct{}),
 	}

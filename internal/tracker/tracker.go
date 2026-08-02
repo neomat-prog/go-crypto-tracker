@@ -16,6 +16,7 @@ type TrackerOpts struct {
 func (t *Tracker) Start() error {
 	go t.transport.Start(t.klinech)
 	go t.renderLoop()
+	close(t.readych)
 	t.loop()
 	return nil
 }
@@ -43,6 +44,11 @@ func (t *Tracker) loop() {
 }
 
 func (t *Tracker) Snapshot(symbol string) []float64 {
+	select {
+	case <-t.quitch:
+		return nil
+	case <-t.readych:
+	}
 	req := snapReq{symbol: symbol, respch: make(chan []float64, 1)}
 	select {
 	case <-t.quitch:
