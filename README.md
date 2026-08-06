@@ -20,6 +20,8 @@ Go 1.25+
 
 ## Configuration
 
+Includes a custom `.env` parser and validator (no third-party dependency) that loads and validates configuration on startup.
+
 Set values in `.env` (or as environment variables, which take precedence):
 
 ```
