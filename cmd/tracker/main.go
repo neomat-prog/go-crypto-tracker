@@ -3,10 +3,12 @@ package main
 import (
 	"context"
 	"fmt"
+	"log"
 	"os"
 	"os/signal"
 	"time"
 
+	"github.com/neomat-prog/cmd/config"
 	"github.com/neomat-prog/internal"
 	"github.com/neomat-prog/internal/binance"
 	"github.com/neomat-prog/internal/tracker"
@@ -16,14 +18,19 @@ func main() {
 	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt)
 	defer cancel()
 
+	cfg, err := config.LoadDotEnv(".env")
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	tp := binance.NewWS(binance.WSOpts{
-		Symbols:  []string{"ETHUSDT"},
-		Interval: "1s",
-		Backfill: 100,
+		Symbol:   cfg.Symbol,
+		Interval: cfg.Interval,
+		Backfill: cfg.Backfill,
 	})
 
 	t := tracker.NewTracker(tracker.TrackerOpts{
-		Symbols:  []string{"ETHUSDT"},
+		Symbol:   cfg.Symbol,
 		RingSize: 100,
 		Interval: 500 * time.Millisecond,
 	}, tp)
@@ -45,12 +52,12 @@ func main() {
 			return
 
 		case <-ticker.C:
-			closes := t.Snapshot("ETHUSDT")
+			closes := t.Snapshot(cfg.Symbol)
 
 			fmt.Print("\033[2J\033[H")
 
 			fmt.Print(internal.Render(
-				"ETHUSDT",
+				cfg.Symbol,
 				closes,
 				15,
 				80,

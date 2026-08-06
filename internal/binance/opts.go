@@ -10,7 +10,7 @@ import (
 var errClosed = errors.New("binance: closed")
 
 type WSOpts struct {
-	Symbols  []string
+	Symbol   string
 	Interval string
 	Backfill int
 }
@@ -42,9 +42,7 @@ func NewWS(opts WSOpts) *WS {
 		errch:  make(chan connErr),
 		quitch: make(chan struct{}),
 	}
-	for _, s := range opts.Symbols {
-		ws.subs = append(ws.subs, streamName(s, opts.Interval))
-	}
+	ws.subs = append(ws.subs, streamName(opts.Symbol, opts.Interval))
 	return ws
 }
 

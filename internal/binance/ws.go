@@ -73,19 +73,15 @@ func (ws *WS) seed(klinech chan<- market.Kline) {
 		return
 	}
 
-	for _, sym := range ws.Symbols {
-		ks, err := backfill(sym, ws.Interval, ws.Backfill)
-		if err != nil {
-			log.Println("binance: backfill:", err)
-			continue
-		}
-
-		for _, k := range ks {
-			select {
-			case klinech <- k:
-			case <-ws.quitch:
-				return
-			}
+	ks, err := backfill(ws.Symbol, ws.Interval, ws.Backfill)
+	if err != nil {
+		log.Println("binance: backfill:", err)
+	}
+	for _, k := range ks {
+		select {
+		case klinech <- k:
+		case <-ws.quitch:
+			return
 		}
 	}
 }

@@ -115,7 +115,7 @@ const btcKlineFrame = `{"e":"kline","E":1700000000000,"s":"BTCUSDT","k":{
 func TestWSSubscribesAndStreamsKlines(t *testing.T) {
 	fs := stubWS(t)
 
-	ws := NewWS(WSOpts{Symbols: []string{"BTCUSDT"}})
+	ws := NewWS(WSOpts{Symbol: "BTCUSDT"})
 	klinech := make(chan market.Kline, 4)
 
 	done := make(chan error, 1)
@@ -150,7 +150,7 @@ func TestWSSubscribesAndStreamsKlines(t *testing.T) {
 func TestWSIgnoresNonKlineFrames(t *testing.T) {
 	fs := stubWS(t)
 
-	ws := NewWS(WSOpts{Symbols: []string{"BTCUSDT"}})
+	ws := NewWS(WSOpts{Symbol: "BTCUSDT"})
 	defer ws.Close()
 
 	klinech := make(chan market.Kline, 4)
@@ -172,7 +172,7 @@ func TestWSSeedsBackfillBeforeStreaming(t *testing.T) {
 	})
 	fs := stubWS(t)
 
-	ws := NewWS(WSOpts{Symbols: []string{"BTCUSDT"}, Backfill: 1})
+	ws := NewWS(WSOpts{Symbol: "BTCUSDT", Backfill: 1})
 	defer ws.Close()
 
 	klinech := make(chan market.Kline, 4)

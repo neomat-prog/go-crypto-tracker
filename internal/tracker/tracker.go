@@ -7,7 +7,7 @@ import (
 )
 
 type TrackerOpts struct {
-	Symbols  []string
+	Symbol   string
 	RingSize int
 	Interval time.Duration
 }

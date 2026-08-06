@@ -1,4 +1,4 @@
-package main
+package config
 
 import (
 	"bufio"
@@ -22,7 +22,7 @@ var validIntervals = map[string]struct{}{
 	"1d": {}, "3d": {}, "1w": {}, "1M": {},
 }
 
-func loadDotEnv(path string) (ConfigOpts, error) {
+func LoadDotEnv(path string) (ConfigOpts, error) {
 	values, _, err := readDotEnv(path)
 	if err != nil {
 		return ConfigOpts{}, err
