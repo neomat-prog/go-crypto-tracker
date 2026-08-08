@@ -1,14 +1,10 @@
-<img
-  src="assets/gopher.png"
-  alt="Gopher"
-  width="400"
-  align="right"
-/>
+<img src="assets/gopher.png" alt="Gopher" width="320" align="right"/>
 
 <h1>go-crypto-tracker</h1>
 
-<p>Terminal app that streams live price data from Binance and renders it as
-an ASCII chart.</p>
+<p>Terminal app that streams live price data from Binance and renders it as an ASCII chart.</p>
+
+<br clear="all"/>
 
 ## Screenshot
 
@@ -20,57 +16,59 @@ Connects to the Binance websocket kline stream for a configured symbol and inter
 
 ## Requirements
 
-Go 1.25+
+- Go 1.25+
 
 ## Configuration
 
 Includes a custom `.env` parser and validator (no third-party dependency) that loads and validates configuration on startup.
 
-Set values in `.env` (or as environment variables, which take precedence):
+Set values in `.env`, or as environment variables — those take precedence:
 
-```
+```dotenv
 SYMBOL="ETHUSDT"
 INTERVAL="1m"
 BACKFILL="100"
 ```
 
-- `SYMBOL` - trading pair, e.g. `ETHUSDT`
-- `INTERVAL` - kline interval, one of `1m 3m 5m 15m 30m 1h 2h 4h 6h 8h 12h 1d 3d 1w 1M`
-- `BACKFILL` - number of historical candles to fetch on startup, `0`-`1000`
+| Variable | Description | Accepted values |
+| --- | --- | --- |
+| `SYMBOL` | Trading pair | e.g. `ETHUSDT` |
+| `INTERVAL` | Kline interval | `1m` `3m` `5m` `15m` `30m` `1h` `2h` `4h` `6h` `8h` `12h` `1d` `3d` `1w` `1M` |
+| `BACKFILL` | Historical candles fetched on startup | `0`–`1000` |
 
 ## Usage
 
-```
+```sh
 make tracker
 ```
 
 Or directly:
 
-```
+```sh
 go run ./cmd/tracker
 ```
 
-Press Ctrl+C to stop.
+Press <kbd>Ctrl</kbd>+<kbd>C</kbd> to stop.
 
 ## Testing
 
-```
+```sh
 make test
 ```
 
 Coverage report:
 
-```
+```sh
 make cover
 ```
 
 ## Layout
 
 ```
-cmd/tracker      entry point
-cmd/config       .env loading and validation
-internal         ASCII chart rendering
-internal/binance REST backfill and websocket client
-internal/market  kline model and ring buffer store
-internal/tracker orchestrates the transport and serves snapshots
+cmd/tracker       entry point
+cmd/config        .env loading and validation
+internal          ASCII chart rendering
+internal/binance  REST backfill and websocket client
+internal/market   kline model and ring buffer store
+internal/tracker  orchestrates the transport and serves snapshots
 ```
