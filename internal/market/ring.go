@@ -50,3 +50,14 @@ func (r *Ring) Closes() []float64 {
 
 	return closes
 }
+
+func (r *Ring) Klines() []Kline {
+	klines := make([]Kline, r.n)
+
+	for i := 0; i < r.n; i++ {
+		idx := (r.head + i) % len(r.buf)
+		klines[i] = r.buf[idx]
+	}
+
+	return klines
+}

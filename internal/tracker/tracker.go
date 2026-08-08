@@ -37,6 +37,12 @@ func (t *Tracker) loop() {
 			} else {
 				req.respch <- nil
 			}
+		case req := <-t.snapKlinesch:
+			if r, ok := t.store[req.symbol]; ok {
+				req.respch <- r.Klines()
+			} else {
+				req.respch <- nil
+			}
 		}
 	}
 }
@@ -58,5 +64,25 @@ func (t *Tracker) Snapshot(symbol string) []float64 {
 		return nil
 	case closes := <-req.respch:
 		return closes
+	}
+}
+
+func (t *Tracker) SnapshotKlines(symbol string) []market.Kline {
+	select {
+	case <-t.quitch:
+		return nil
+	case <-t.readych:
+	}
+	req := snapKlinesReq{symbol: symbol, respch: make(chan []market.Kline, 1)}
+	select {
+	case <-t.quitch:
+		return nil
+	case t.snapKlinesch <- req:
+	}
+	select {
+	case <-t.quitch:
+		return nil
+	case klines := <-req.respch:
+		return klines
 	}
 }

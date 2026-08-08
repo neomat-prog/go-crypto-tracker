@@ -9,7 +9,7 @@ import (
 	"time"
 
 	"github.com/neomat-prog/cmd/config"
-	"github.com/neomat-prog/internal"
+	"github.com/neomat-prog/internal/Graph"
 	"github.com/neomat-prog/internal/binance"
 	"github.com/neomat-prog/internal/tracker"
 )
@@ -31,7 +31,7 @@ func main() {
 
 	t := tracker.NewTracker(tracker.TrackerOpts{
 		Symbol:   cfg.Symbol,
-		RingSize: 100,
+		RingSize: 150,
 		Interval: 500 * time.Millisecond,
 	}, tp)
 
@@ -52,15 +52,25 @@ func main() {
 			return
 
 		case <-ticker.C:
-			closes := t.Snapshot(cfg.Symbol)
+			klines := t.SnapshotKlines(cfg.Symbol)
+
+			candles := make([]Graph.Candle, len(klines))
+			for i, k := range klines {
+				candles[i] = Graph.Candle{
+					Open:  k.Open,
+					High:  k.High,
+					Low:   k.Low,
+					Close: k.Close,
+				}
+			}
 
 			fmt.Print("\033[2J\033[H")
 
-			fmt.Print(internal.Render(
+			fmt.Print(Graph.RenderCandles(
 				cfg.Symbol,
-				closes,
-				15,
-				80,
+				candles,
+				20,
+				150,
 			))
 		}
 	}
