@@ -10,6 +10,10 @@
 <p>Terminal app that streams live price data from Binance and renders it as
 an ASCII chart.</p>
 
+## Screenshot
+
+![Candlestick chart](assets/graph.png)
+
 ## What it does
 
 Connects to the Binance websocket kline stream for a configured symbol and interval, backfills recent history over REST on startup, keeps a rolling window of closing prices in memory, and redraws an ASCII line chart in the terminal twice a second. Reconnects automatically on dropped connections.
