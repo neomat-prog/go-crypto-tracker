@@ -2,7 +2,7 @@
 
 <h1>go-crypto-tracker</h1>
 
-<p>Terminal app that streams live price data from Binance and renders it as an ASCII chart.</p>
+<p>Terminal app that streams live price data from Binance and renders it as an UTF-8 chart.</p>
 
 <br clear="all"/>
 
