@@ -24,47 +24,6 @@ const (
 	minWidth  = 20
 )
 
-func chartSize() (height, width int) {
-	cols, rows, err := term.GetSize(int(os.Stdout.Fd()))
-	if err != nil || cols <= 0 || rows <= 0 {
-		return 20, 150
-	}
-
-	height = rows - headerRows
-	width = cols - Graph.AxisWidth
-
-	if height < 2 {
-		height = 2
-	}
-	if width < 1 {
-		width = 1
-	}
-	return height, width
-}
-
-func resolveStyle(color string, ascii bool) (Graph.Style, error) {
-	st := Graph.DetectStyle()
-
-	switch color {
-	case "auto":
-	case "truecolor":
-		st.Color = Graph.ColorTrue
-	case "256":
-		st.Color = Graph.Color256
-	case "16":
-		st.Color = Graph.Color16
-	case "none":
-		st.Color = Graph.ColorNone
-	default:
-		return st, fmt.Errorf("--color %q is not one of auto, truecolor, 256, 16, none", color)
-	}
-
-	if ascii {
-		st.ASCII = true
-	}
-	return st, nil
-}
-
 func main() {
 	color := flag.String("color", "auto", "color depth: auto, truecolor, 256, 16, none")
 	ascii := flag.Bool("ascii", false, "draw with ASCII only, for terminals without Unicode")
@@ -142,4 +101,45 @@ func main() {
 			))
 		}
 	}
+}
+
+func chartSize() (height, width int) {
+	cols, rows, err := term.GetSize(int(os.Stdout.Fd()))
+	if err != nil || cols <= 0 || rows <= 0 {
+		return 20, 150
+	}
+
+	height = rows - headerRows
+	width = cols - Graph.AxisWidth
+
+	if height < 2 {
+		height = 2
+	}
+	if width < 1 {
+		width = 1
+	}
+	return height, width
+}
+
+func resolveStyle(color string, ascii bool) (Graph.Style, error) {
+	st := Graph.DetectStyle()
+
+	switch color {
+	case "auto":
+	case "truecolor":
+		st.Color = Graph.ColorTrue
+	case "256":
+		st.Color = Graph.Color256
+	case "16":
+		st.Color = Graph.Color16
+	case "none":
+		st.Color = Graph.ColorNone
+	default:
+		return st, fmt.Errorf("--color %q is not one of auto, truecolor, 256, 16, none", color)
+	}
+
+	if ascii {
+		st.ASCII = true
+	}
+	return st, nil
 }
